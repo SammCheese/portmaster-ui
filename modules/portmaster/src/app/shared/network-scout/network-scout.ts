@@ -32,11 +32,14 @@ export class NetworkScoutComponent implements OnInit, OnDestroy {
   /** The current search term as entered in the input[type="text"] */
   searchTerm: string = '';
 
+  /** Order of listed elements */
+  displayOrder: string = "A - Z";
+
   /** A list of all active profiles without any search applied */
   allProfiles: _Profile[] = [];
 
   /** Defines if new elements should be expanded or collapsed */
-  expandCollapseState: 'expand' | 'collapse' = 'expand';
+  expandCollapseState: ('expand' | 'collapse') = 'expand';
 
   /** Whether or not the SPN is enabled */
   spnEnabled = false;
@@ -60,6 +63,14 @@ export class NetworkScoutComponent implements OnInit, OnDestroy {
   /** TrackByFunction for the exit pins */
   trackPin: TrackByFunction<_Pin> = (_, pin) => pin.ID;
 
+  SortMethods = {
+    aToZ: "A - Z",
+    zToA: "Z - A",
+    TotalConnections: "Total Connections",
+    ConnectionsDenied: "Denied Connections",
+    ConnectionsAllowed: "Allowed Connections",
+  }
+
   constructor(
     private netquery: Netquery,
     private spn: SPNService,
@@ -68,12 +79,30 @@ export class NetworkScoutComponent implements OnInit, OnDestroy {
     private cdr: ChangeDetectorRef,
   ) { }
 
+  sortProfiles(profiles: _Profile[]) {
+    const sortMethods = new Map([
+      [this.SortMethods.aToZ, (a: _Profile, b: _Profile) => a.Name.localeCompare(b.Name)],
+      [this.SortMethods.zToA, (a: _Profile, b: _Profile) => b.Name.localeCompare(a.Name)],
+      [this.SortMethods.TotalConnections, (a: _Profile, b: _Profile) => (b.countAllowed + b.countUnpermitted) - (a.countAllowed + a.countUnpermitted)],
+      [this.SortMethods.ConnectionsAllowed, (a: _Profile, b: _Profile) => b.countAllowed - a.countAllowed],
+      [this.SortMethods.ConnectionsDenied, (a: _Profile, b: _Profile) => b.countUnpermitted - a.countUnpermitted],
+    ]);
+
+    const sortingFunc = sortMethods.get(this.displayOrder);
+
+    if (sortingFunc) {
+      profiles.sort(sortingFunc);
+    }
+
+    return profiles;
+  }
+
   searchProfiles(term: string) {
     term = term.trim();
 
     if (term === '') {
       this.profiles = [
-        ...this.allProfiles
+       ...this.sortProfiles(this.allProfiles)
       ];
 
       return;
@@ -95,6 +124,10 @@ export class NetworkScoutComponent implements OnInit, OnDestroy {
 
       return false;
     })
+  }
+
+  refreshScout(event: any) {
+    this.cdr.markForCheck();
   }
 
   expandAll() {
