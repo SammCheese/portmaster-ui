@@ -126,7 +126,7 @@ export class NetworkScoutComponent implements OnInit, OnDestroy {
     })
   }
 
-  refreshScout(event: any) {
+  handleSortChange() {
     this.cdr.markForCheck();
   }
 
