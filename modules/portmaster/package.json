@@ -1,6 +1,6 @@
 {
   "name": "portmaster",
-  "version": "0.5.0",
+  "version": "0.5.1",
   "scripts": {
     "ng": "ng",
     "start": "npm install && npm run build-libs:dev && ng serve --proxy-config ./proxy.json",
@@ -71,7 +71,6 @@
     "jasmine-core": "^5.0.0",
     "jasmine-spec-reporter": "^7.0.0",
     "js-yaml-loader": "^1.2.2",
-    "marked": "^5.0.4",
     "ng-packagr": "^16.0.1",
     "postcss-import": "^15.1.0",
     "postcss-loader": "^7.3.0",

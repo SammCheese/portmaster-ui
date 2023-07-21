@@ -1,5 +1,5 @@
 import { coerceArray } from "@angular/cdk/coercion";
-import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, DestroyRef, EventEmitter, Input, OnDestroy, OnInit, Output, QueryList, TemplateRef, TrackByFunction, ViewChild, ViewChildren, inject } from "@angular/core";
+import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, DestroyRef, EventEmitter, Input, OnDestroy, OnInit, Output, QueryList, TemplateRef, TrackByFunction, ViewChildren, inject } from "@angular/core";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { ActivatedRoute, Router } from "@angular/router";
 import { ChartResult, Condition, IPScope, Netquery, NetqueryConnection, OrderBy, PossilbeValue, Query, QueryResult, Select, Verdict } from "@safing/portmaster-api";
@@ -106,7 +106,7 @@ interface LocalQueryResult extends QueryResult {
 })
 // eslint-disable-next-line @angular-eslint/component-class-suffix
 export class SfngNetqueryViewer implements OnInit, OnDestroy, AfterViewInit {
-  @ViewChild('accordionGroup') accordionGroup!: SfngAccordionGroupComponent;
+  @ViewChildren('accordionGroup') accordionGroup!: SfngAccordionGroupComponent;
   /** @private Used to trigger a reload of the current filter */
   private search$ = new Subject<void>();
 
@@ -152,19 +152,9 @@ export class SfngNetqueryViewer implements OnInit, OnDestroy, AfterViewInit {
   /** @private The index of the pro-tip that is currently rendered. */
   proTipIdx = 0;
 
-  /** @private The last time the connections were loaded */
-  lastReload: Date = new Date();
-
-  /** @private Used to refresh the "Last reload xxx ago" message */
-  lastReloadTicker = interval(2000)
-    .pipe(
-      takeUntilDestroyed(this.destroyRef),
-      map(() => Math.floor((new Date()).getTime() - this.lastReload.getTime()) / 1000),
-      share()
-    )
-
   /** @private Used to keep track of the current auto-refresh state */
   autoRefreshEnabled = true;
+
 
   /** @private  This is what will show on the Auto-Refresh toggle button*/
   refreshState = "⏸";
